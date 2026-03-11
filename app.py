@@ -3,16 +3,14 @@ import pickle
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import os
 
 # Load model
-model_path = os.path.join(os.path.dirname(__file__), "aqi_model.pkl")
-model = pickle.load(open(model_path, "rb"))
+model = pickle.load(open("aqi_model.pkl", "rb"))
 
-# Page settings
+# Page config
 st.set_page_config(page_title="AQI Prediction", layout="wide")
 
-st.title("🌍 Air Quality Index Prediction System")
+st.title("🌍 Air Quality Index Prediction")
 st.write("Predict AQI using environmental pollutant levels")
 
 st.divider()
@@ -34,7 +32,7 @@ col1, col2 = st.columns(2)
 
 with col1:
 
-    st.subheader("Pollution Inputs")
+    st.subheader("Enter Pollution Levels")
 
     pm25 = st.slider("PM2.5", 0, 500, 50)
     pm10 = st.slider("PM10", 0, 500, 20)
@@ -53,7 +51,7 @@ with col1:
     month = st.slider("Month", 1, 12, 3)
     day = st.slider("Day of Week", 0, 6, 2)
 
-# Prediction
+# Prediction button
 if st.button("Predict AQI"):
 
     features = np.array([[pm25, pm10, no2, so2, co, o3, city, month, day]])
@@ -66,7 +64,7 @@ if st.button("Predict AQI"):
 
         st.metric("Predicted AQI", round(prediction, 2))
 
-        # AQI category
+        # AQI Category
         if prediction <= 50:
             category = "Good 🟢"
         elif prediction <= 100:
@@ -85,7 +83,7 @@ if st.button("Predict AQI"):
 
         st.divider()
 
-        # Pollution bar chart
+        # Pollution visualization
         pollutants = {
             "PM2.5": pm25,
             "PM10": pm10,
@@ -96,7 +94,7 @@ if st.button("Predict AQI"):
         }
 
         df = pd.DataFrame(
-            pollutants.items(),
+            list(pollutants.items()),
             columns=["Pollutant", "Value"]
         )
 
@@ -105,7 +103,6 @@ if st.button("Predict AQI"):
         ax.bar(df["Pollutant"], df["Value"])
 
         ax.set_title("Pollution Levels")
-
         ax.set_ylabel("Concentration")
 
         st.pyplot(fig)
